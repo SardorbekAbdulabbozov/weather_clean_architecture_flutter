@@ -1,0 +1,48 @@
+name: weather_clean_architecture
+description: A sample weather app developed in Flutter Clean Architecture
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.5 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.5
+  get_it: ^7.2.0 # for Dependency Injection
+  dartz: ^0.10.1 # for functional programming
+  flutter_bloc: ^8.1.1 # for state management
+  bloc: ^8.1.0 # for state management
+  dio: ^4.0.6 # for network client
+  connectivity: ^3.0.6 # for network connectivity
+  internet_connection_checker_plus: ^1.0.1 # for network connectivity
+  go_router: ^6.0.0 # for routing
+  flutter_svg: ^1.1.6 # for svg
+  path_provider: ^2.0.11 # for path provider
+  modal_progress_hud_nsn: ^0.3.0 # for page loading
+  cached_network_image: ^3.2.2 # for image caching
+  equatable: ^2.0.5 # for equatable
+  glass_kit: ^2.0.1 # for glass effect
+  pull_to_refresh: ^2.0.0 # for pull to refresh
+  jiffy: ^4.0.1 # for date time parsing
+  hive_flutter: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.3.0
+  bloc_test: ^9.1.0
+  mockito: ^5.3.2
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/png/
+    - assets/svg/
