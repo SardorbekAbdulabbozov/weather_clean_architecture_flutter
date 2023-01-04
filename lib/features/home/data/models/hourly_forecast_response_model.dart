@@ -115,7 +115,7 @@ extension HourlyForecastExtension on HourlyForecastResponseModel {
       }
     }
     return HourlyForecastEntity(
-      date: date,
+      dates: date,
       temps: temps,
       windSpeeds: windSpeeds,
     );

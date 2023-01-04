@@ -1,90 +1,79 @@
 import 'package:bloc/bloc.dart';
-import 'package:weather_clean_architecture/constants/constants.dart';
-import 'package:weather_clean_architecture/core/error/failure.dart';
+import 'package:weather_clean_architecture/features/home/domain/enitities/current_weather_entity.dart';
+import 'package:weather_clean_architecture/features/home/domain/enitities/hourly_forecast_entity.dart';
+import 'package:weather_clean_architecture/features/home/domain/enitities/weekly_forecast_entity.dart';
 import 'package:weather_clean_architecture/features/home/domain/usecases/current_weather.dart';
 import 'package:weather_clean_architecture/features/home/domain/usecases/hourly_forecast.dart';
+import 'package:weather_clean_architecture/features/home/domain/usecases/weekly_forecast.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_event.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final CurrentWeather currentWeather;
   final HourlyForecast hourlyForecast;
+  final WeeklyForecast weeklyForecast;
 
   HomeBloc({
     required this.currentWeather,
     required this.hourlyForecast,
+    required this.weeklyForecast,
   }) : super(HomeInitial()) {
-    on<CurrentWeatherRefresh>(_currentWeatherRefreshHandler);
-    on<HourlyForecastPressed>(_getHourlyForecast);
+    on<FetchHomeData>(_fetchHomeData);
   }
 
-  void _currentWeatherRefreshHandler(
-      CurrentWeatherRefresh event, Emitter<HomeState> emit) async {
+  Future<void> _fetchHomeData(
+    FetchHomeData event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(HomeLoading());
+    CurrentWeatherEntity? currentWeatherEntity;
+    HourlyForecastEntity? hourlyForecastEntity;
+    WeeklyForecastEntity? weeklyForecastEntity;
     final responseH =
         await hourlyForecast(Params(lat: event.lat, lon: event.lon));
-    final response =
+    final responseC =
         await currentWeather(Params(lat: event.lat, lon: event.lon));
-    response.fold(
-      (failure) => emit(
-        HomeError(
-            message: (failure is ServerFailure)
-                ? failure.message
-                : Validations.SOMETHING_WENT_WRONG),
-      ),
-      (weather) {
-        var homeLoaded = HomeLoaded(
-          cityName: weather.cityName,
-          temperature: weather.temperature,
-          weatherDescription: weather.weatherDescription,
-          maxTemperature: weather.maxTemperature,
-          minTemperature: weather.minTemperature,
-          date: const [],
-          temp: const [],
-          windSpeed: const [],
-        );
-        responseH.fold(
-          (failure) {
-            emit(
-              HomeError(
-                  message: (failure is ServerFailure)
-                      ? failure.message
-                      : Validations.SOMETHING_WENT_WRONG),
-            );
-          },
-          (forecast) {
-            homeLoaded = homeLoaded.copyWith(
-              date: forecast.date,
-              temp: forecast.temps,
-              windSpeed: forecast.windSpeeds,
-            );
-          },
-        );
-        emit(homeLoaded);
-      },
-    );
-  }
-
-  void _getHourlyForecast(
-      HourlyForecastPressed event, Emitter<HomeState> emit) async {
-    emit(HomeLoading());
-    final response =
-        await hourlyForecast(Params(lat: event.lat, lon: event.lon));
-    response.fold(
+    final responseW =
+        await weeklyForecast(Params(lat: event.lat, lon: event.lon));
+    responseH.fold(
       (failure) {
         emit(
-          HomeError(
-              message: (failure is ServerFailure)
-                  ? failure.message
-                  : Validations.SOMETHING_WENT_WRONG),
+          const HomeHourlyForecastError(
+            message: 'Hourly weather cannot be loaded due to unexpected error',
+          ),
         );
       },
-      (weather) {
+      (data) {
+        hourlyForecastEntity = data;
+      },
+    );
+    responseC.fold(
+      (failure) {
         emit(
-          HourlyForecastLoaded(
-            date: weather.date,
-            temp: weather.temps,
-            windSpeed: weather.windSpeeds,
+          const HomeCurrentWeatherError(
+            message: 'Current weather cannot be loaded due to unexpected error',
+          ),
+        );
+      },
+      (data) {
+        currentWeatherEntity = data;
+      },
+    );
+    responseW.fold(
+      (failure) {
+        emit(
+          const HomeWeeklyForecastError(
+            message: 'Weekly weather cannot be loaded due to unexpected error',
+          ),
+        );
+      },
+      (data) {
+        weeklyForecastEntity = data;
+        emit(
+          HomeSuccess(
+            currentWeather: currentWeatherEntity,
+            hourlyForecast: hourlyForecastEntity,
+            weeklyForecast: weeklyForecastEntity,
           ),
         );
       },

@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 
-class HourlyForecastWidget extends StatelessWidget {
-  final List<String> date;
-  final List<double> temp;
-  final List<double> windSpeed;
+class HourlyWeeklyForecastWidget extends StatelessWidget {
+  final List<String> dates;
+  final List<double> temps;
+  final List<double> windSpeeds;
 
-  const HourlyForecastWidget({
+  const HourlyWeeklyForecastWidget({
     Key? key,
-    required this.date,
-    required this.temp,
-    required this.windSpeed,
+    required this.dates,
+    required this.temps,
+    required this.windSpeeds,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      margin: const EdgeInsets.all(16).copyWith(top: 80),
+      margin: const EdgeInsets.all(16).copyWith(top: 19),
       width: MediaQuery.of(context).size.width,
       child: ListView.separated(
-        itemCount: date.length,
+        itemCount: dates.length,
         scrollDirection: Axis.horizontal,
         separatorBuilder: (_, index) {
           return const SizedBox(width: 12);
@@ -49,7 +49,7 @@ class HourlyForecastWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 32, bottom: 16),
                   child: Text(
-                    date[i],
+                    dates[i],
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -59,17 +59,17 @@ class HourlyForecastWidget extends StatelessWidget {
                   ),
                 ),
                 Image.asset(
-                  date[i].contains('AM')
-                      ? (int.tryParse(date[i].replaceAll(':00 AM', "")) ?? 0) <
+                  dates[i].contains('AM')
+                      ? (int.tryParse(dates[i].replaceAll(':00 AM', "")) ?? 0) <
                                   6 ||
-                              (int.tryParse(date[i].replaceAll(':00 AM', "")) ??
+                              (int.tryParse(dates[i].replaceAll(':00 AM', "")) ??
                                       0) ==
                                   12
                           ? "assets/png/ic_moon_wind.png"
                           : "assets/png/ic_sun_mid_rain.png"
-                      : windSpeed[i] >= 10 && windSpeed[i] <= 19
+                      : windSpeeds[i] >= 10 && windSpeeds[i] <= 19
                           ? 'assets/png/ic_moon_wind.png'
-                          : windSpeed[i] >= 20
+                          : windSpeeds[i] >= 20
                               ? 'assets/png/ic_moon_wind.png'
                               : 'assets/png/ic_tornado.png',
                   width: 32,
@@ -79,7 +79,7 @@ class HourlyForecastWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Text(
-                    '${temp[i]}\u00b0',
+                    '${temps[i]}\u00b0',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 20,

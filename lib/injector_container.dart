@@ -14,6 +14,7 @@ import 'package:weather_clean_architecture/features/home/data/repository/home_re
 import 'package:weather_clean_architecture/features/home/domain/repository/home_repository.dart';
 import 'package:weather_clean_architecture/features/home/domain/usecases/current_weather.dart';
 import 'package:weather_clean_architecture/features/home/domain/usecases/hourly_forecast.dart';
+import 'package:weather_clean_architecture/features/home/domain/usecases/weekly_forecast.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_bloc.dart';
 
 final sl = GetIt.instance;
@@ -45,11 +46,17 @@ Future<void> init() async {
 void homeFeature() {
   // bloc
   sl.registerFactory(
-      () => HomeBloc(currentWeather: sl(), hourlyForecast: sl()));
+    () => HomeBloc(
+      currentWeather: sl(),
+      hourlyForecast: sl(),
+      weeklyForecast: sl(),
+    ),
+  );
 
   // usecases
   sl.registerLazySingleton<CurrentWeather>(() => CurrentWeather(sl()));
   sl.registerLazySingleton<HourlyForecast>(() => HourlyForecast(sl()));
+  sl.registerLazySingleton<WeeklyForecast>(() => WeeklyForecast(sl()));
 
   // repository
   sl.registerLazySingleton<HomeRepository>(

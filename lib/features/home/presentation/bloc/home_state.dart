@@ -1,4 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:weather_clean_architecture/features/home/domain/enitities/current_weather_entity.dart';
+import 'package:weather_clean_architecture/features/home/domain/enitities/hourly_forecast_entity.dart';
+import 'package:weather_clean_architecture/features/home/domain/enitities/weekly_forecast_entity.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -14,87 +17,44 @@ class HomeLoading extends HomeState {
   List<Object?> get props => [];
 }
 
-class HomeLoaded extends HomeState {
-  final String cityName;
-  final String temperature;
-  final String weatherDescription;
-  final String maxTemperature;
-  final String minTemperature;
-  final List<String> date;
-  final List<double> temp;
-  final List<double> windSpeed;
-
-  const HomeLoaded({
-    required this.cityName,
-    required this.temperature,
-    required this.weatherDescription,
-    required this.maxTemperature,
-    required this.minTemperature,
-    required this.date,
-    required this.temp,
-    required this.windSpeed,
-  });
-
-  HomeLoaded copyWith({
-    String? cityName,
-    String? temperature,
-    String? weatherDescription,
-    String? maxTemperature,
-    String? minTemperature,
-    List<String>? date,
-    List<double>? temp,
-    List<double>? windSpeed,
-  }) {
-    return HomeLoaded(
-      cityName: cityName ?? this.cityName,
-      temperature: temperature ?? this.temperature,
-      weatherDescription: weatherDescription ?? this.weatherDescription,
-      maxTemperature: maxTemperature ?? this.maxTemperature,
-      minTemperature: minTemperature ?? this.minTemperature,
-      date: date ?? this.date,
-      temp: temp ?? this.temp,
-      windSpeed: temp ?? this.windSpeed,
-    );
-  }
-
-  @override
-  List<Object?> get props => [
-        cityName,
-        temperature,
-        weatherDescription,
-        maxTemperature,
-        minTemperature,
-        date,
-        temp,
-        windSpeed,
-      ];
-}
-
-class HourlyForecastLoaded extends HomeState {
-  final List<String> date;
-  final List<double> temp;
-  final List<double> windSpeed;
-
-  const HourlyForecastLoaded({
-    required this.date,
-    required this.temp,
-    required this.windSpeed,
-  });
-
-  @override
-  List<Object?> get props => [date, temp, windSpeed];
-}
-
-class HomeError extends HomeState {
+class HomeCurrentWeatherError extends HomeState {
   final String message;
 
-  const HomeError({required this.message});
+  const HomeCurrentWeatherError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
+class HomeHourlyForecastError extends HomeState {
+  final String message;
+
+  const HomeHourlyForecastError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
+class HomeWeeklyForecastError extends HomeState {
+  final String message;
+
+  const HomeWeeklyForecastError({required this.message});
 
   @override
   List<Object> get props => [message];
 }
 
 class HomeSuccess extends HomeState {
+  final CurrentWeatherEntity? currentWeather;
+  final HourlyForecastEntity? hourlyForecast;
+  final WeeklyForecastEntity? weeklyForecast;
+
+  const HomeSuccess({
+    required this.currentWeather,
+    required this.hourlyForecast,
+    required this.weeklyForecast,
+  });
+
   @override
   List<Object> get props => [];
 }

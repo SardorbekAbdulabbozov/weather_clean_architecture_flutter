@@ -4,10 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glass_kit/glass_kit.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:weather_clean_architecture/constants/constants.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_bloc.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_event.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_state.dart';
-import 'package:weather_clean_architecture/features/home/presentation/screens/widgets/hourly_weekly_forecast_widget.dart';
+import 'package:weather_clean_architecture/features/home/presentation/screens/widgets/forecast_widget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,11 +17,34 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocConsumer<HomeBloc, HomeState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is HomeHourlyForecastError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
+          } else if (state is HomeWeeklyForecastError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
+          } else if (state is HomeCurrentWeatherError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
+          } else {}
+        },
         builder: (context, state) {
           if (state is HomeInitial) {
             context.read<HomeBloc>().add(
-                  const CurrentWeatherRefresh(lat: 51.5072, lon: 0.1276),
+                  const FetchHomeData(
+                    lat: 41.26465,
+                    lon: 69.21627,
+                  ),
                 );
           }
           return ModalProgressHUD(
@@ -40,11 +64,11 @@ class HomePage extends StatelessWidget {
               ),
               onRefresh: () {
                 context.read<HomeBloc>().add(
-                      const CurrentWeatherRefresh(lat: 51.5072, lon: 0.1276),
+                      const FetchHomeData(
+                        lat: 41.26465,
+                        lon: 69.21627,
+                      ),
                     );
-                // context.read<HomeBloc>().add(
-                //       const HourlyForecastPressed(lat: 51.5072, lon: 0.1276),
-                //     );
               },
               enablePullDown: true,
               enablePullUp: false,
@@ -68,7 +92,9 @@ class HomePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            state is HomeLoaded ? state.cityName : '',
+                            state is HomeSuccess
+                                ? (state.currentWeather?.cityName) ?? ""
+                                : '',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 34,
@@ -77,8 +103,8 @@ class HomePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            state is HomeLoaded
-                                ? '${state.temperature}\u00b0'
+                            state is HomeSuccess
+                                ? '${state.currentWeather?.temperature ?? 0}\u00b0'
                                 : '',
                             style: const TextStyle(
                               color: Colors.white,
@@ -88,7 +114,10 @@ class HomePage extends StatelessWidget {
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            state is HomeLoaded ? state.weatherDescription : '',
+                            state is HomeSuccess
+                                ? (state.currentWeather?.weatherDescription ??
+                                    '')
+                                : '',
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 20,
@@ -96,7 +125,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'H:${state is HomeLoaded ? state.maxTemperature : ''}  L:${state is HomeLoaded ? state.minTemperature : ''}',
+                            'H:${state is HomeSuccess ? (state.currentWeather?.maxTemperature ?? "0") : ''}  L:${state is HomeSuccess ? (state.currentWeather?.minTemperature ?? '0') : ''}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -113,40 +142,24 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      top: MediaQuery.of(context).size.height * 0.574,
+                      top: MediaQuery.of(context).size.height * 0.560,
                       child: Stack(
                         alignment: Alignment.bottomCenter,
                         children: [
                           Positioned(
                             child: GlassContainer(
                               width: MediaQuery.of(context).size.width,
-                              height: 400,
+                              height: 470,
                               borderRadius: BorderRadius.circular(44),
                               gradient: LinearGradient(
-                                colors: [
-                                  const Color.fromARGB(255, 46, 51, 90)
-                                      .withOpacity(0.26),
-                                  const Color.fromARGB(255, 28, 27, 51)
-                                      .withOpacity(0.26),
-                                ],
+                                colors: Gradients.cardGradient,
                                 begin: const Alignment(0.0, 0.0),
                                 end: const Alignment(0.215, 0.977),
                               ),
                               borderGradient: const LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.white,
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                ],
+                                colors: Gradients.cardBorderGradient,
                               ),
                               blur: 15.0,
                               borderWidth: 0.5,
@@ -154,12 +167,31 @@ class HomePage extends StatelessWidget {
                               alignment: Alignment.center,
                               child: Column(
                                 children: [
-                                  HourlyForecastWidget(
-                                    date: state is HomeLoaded ? state.date : [],
-                                    temp: state is HomeLoaded ? state.temp : [],
-                                    windSpeed: state is HomeLoaded
-                                        ? state.windSpeed
-                                        : [],
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(top: 42, bottom: 20),
+                                    child: ForecastWidget(
+                                      hDates: state is HomeSuccess
+                                          ? state.hourlyForecast?.dates ?? []
+                                          : [],
+                                      hTemps: state is HomeSuccess
+                                          ? state.hourlyForecast?.temps ?? []
+                                          : [],
+                                      hWindSpeeds: state is HomeSuccess
+                                          ? state.hourlyForecast?.windSpeeds ??
+                                              []
+                                          : [],
+                                     wDates: state is HomeSuccess
+                                          ? state.weeklyForecast?.dates ?? []
+                                          : [],
+                                     wTemps: state is HomeSuccess
+                                          ? state.weeklyForecast?.temps ?? []
+                                          : [],
+                                     wWindSpeeds: state is HomeSuccess
+                                          ? state.weeklyForecast?.windSpeeds ??
+                                              []
+                                          : [],
+                                    ),
                                   ),
                                   Stack(
                                     alignment: Alignment.bottomCenter,
@@ -179,7 +211,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           Positioned(
-                            bottom: 380,
+                            bottom: 446,
                             child: Container(
                               width: 48,
                               height: 5,

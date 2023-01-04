@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-class HourlyForecastEntity extends Equatable {
+class WeeklyForecastEntity extends Equatable {
   final List<String> dates;
   final List<double> temps;
   final List<double> windSpeeds;
 
-  const HourlyForecastEntity({
+  const WeeklyForecastEntity({
     required this.dates,
     required this.temps,
     required this.windSpeeds,
