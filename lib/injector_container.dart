@@ -16,6 +16,13 @@ import 'package:weather_clean_architecture/features/home/domain/usecases/current
 import 'package:weather_clean_architecture/features/home/domain/usecases/hourly_forecast.dart';
 import 'package:weather_clean_architecture/features/home/domain/usecases/weekly_forecast.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_bloc.dart';
+import 'package:weather_clean_architecture/features/weather/data/data_source/remote/weather_remote_data_source.dart';
+import 'package:weather_clean_architecture/features/weather/data/data_source/remote/weather_remote_data_source_impl.dart';
+import 'package:weather_clean_architecture/features/weather/data/repository/weather_repository_impl.dart';
+import 'package:weather_clean_architecture/features/weather/domain/repository/weather_repository.dart';
+import 'package:weather_clean_architecture/features/weather/domain/usecases/geocoding.dart';
+import 'package:weather_clean_architecture/features/weather/domain/usecases/weather.dart';
+import 'package:weather_clean_architecture/features/weather/presentation/bloc/weather_bloc.dart';
 
 final sl = GetIt.instance;
 late Box<dynamic> _box;
@@ -41,6 +48,7 @@ Future<void> init() async {
 
   // features
   homeFeature();
+  weatherFeature();
 }
 
 void homeFeature() {
@@ -73,6 +81,33 @@ void homeFeature() {
   );
   sl.registerLazySingleton<HomeLocalDataSource>(
     () => HomeLocalDataSourceImpl(_box),
+  );
+}
+
+void weatherFeature() {
+  // bloc
+  sl.registerFactory(
+    () => WeatherBloc(
+      weather: sl(),
+      geocoding: sl(),
+    ),
+  );
+
+  // usecases
+  sl.registerLazySingleton<Weather>(() => Weather(sl()));
+  sl.registerLazySingleton<Geocoding>(() => Geocoding(sl()));
+
+  // repository
+  sl.registerLazySingleton<WeatherRepository>(
+    () => WeatherRepositoryImpl(
+      weatherRemoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  // data sources
+  sl.registerLazySingleton<WeatherRemoteDataSource>(
+    () => WeatherRemoteDataSourceImpl(sl()),
   );
 }
 

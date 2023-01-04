@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:weather_clean_architecture/features/home/presentation/screens/home_page.dart';
 import 'package:weather_clean_architecture/router/route_names.dart';
-import 'package:weather_clean_architecture/features/weather/presentation/weather_page.dart';
+import 'package:weather_clean_architecture/features/weather/presentation/screens/weather_page.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellRootNavigatorKey = GlobalKey<NavigatorState>();

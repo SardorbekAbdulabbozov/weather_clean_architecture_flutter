@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_clean_architecture/app.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_bloc.dart';
+import 'package:weather_clean_architecture/features/weather/presentation/bloc/weather_bloc.dart';
 import 'injector_container.dart' as di;
 import 'injector_container.dart';
 
@@ -20,6 +21,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => sl<HomeBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<WeatherBloc>(),
         ),
       ],
       child: const WeatherApp(),

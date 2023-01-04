@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:glass_kit/glass_kit.dart';
+import 'package:go_router/go_router.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:weather_clean_architecture/constants/constants.dart';
@@ -9,6 +10,7 @@ import 'package:weather_clean_architecture/features/home/presentation/bloc/home_
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_event.dart';
 import 'package:weather_clean_architecture/features/home/presentation/bloc/home_state.dart';
 import 'package:weather_clean_architecture/features/home/presentation/screens/widgets/forecast_widget.dart';
+import 'package:weather_clean_architecture/router/route_names.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -62,6 +64,7 @@ class HomePage extends StatelessWidget {
                 releaseIcon: Icon(Icons.refresh, color: Colors.white),
                 textStyle: TextStyle(color: Colors.white),
               ),
+              footer: const SizedBox.shrink(),
               onRefresh: () {
                 context.read<HomeBloc>().add(
                       const FetchHomeData(
@@ -70,6 +73,7 @@ class HomePage extends StatelessWidget {
                       ),
                     );
               },
+              physics: const ClampingScrollPhysics(),
               enablePullDown: true,
               enablePullUp: false,
               enableTwoLevel: false,
@@ -168,8 +172,8 @@ class HomePage extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding:
-                                        const EdgeInsets.only(top: 42, bottom: 20),
+                                    padding: const EdgeInsets.only(
+                                        top: 42, bottom: 20),
                                     child: ForecastWidget(
                                       hDates: state is HomeSuccess
                                           ? state.hourlyForecast?.dates ?? []
@@ -181,13 +185,13 @@ class HomePage extends StatelessWidget {
                                           ? state.hourlyForecast?.windSpeeds ??
                                               []
                                           : [],
-                                     wDates: state is HomeSuccess
+                                      wDates: state is HomeSuccess
                                           ? state.weeklyForecast?.dates ?? []
                                           : [],
-                                     wTemps: state is HomeSuccess
+                                      wTemps: state is HomeSuccess
                                           ? state.weeklyForecast?.temps ?? []
                                           : [],
-                                     wWindSpeeds: state is HomeSuccess
+                                      wWindSpeeds: state is HomeSuccess
                                           ? state.weeklyForecast?.windSpeeds ??
                                               []
                                           : [],
@@ -203,6 +207,19 @@ class HomePage extends StatelessWidget {
                                       ),
                                       SvgPicture.asset(
                                         'assets/svg/ic_nav_bar2.svg',
+                                      ),
+                                      Positioned(
+                                        right: 32,
+                                        bottom: 8,
+                                        child: InkWell(
+                                          onTap: () {
+                                            context.pushNamed(Routes.weather);
+                                          },
+                                          child: const CircleAvatar(
+                                            backgroundColor: Colors.transparent,
+                                            radius: 36,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   )

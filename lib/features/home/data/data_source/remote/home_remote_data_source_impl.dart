@@ -50,7 +50,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   ) async {
     try {
       final response = await dio.get(
-        Constants.BASE_URL_2 + Urls.HOURLY_FORECAST,
+        Constants.BASE_URL_2 + Urls.FORECAST,
         queryParameters: {
           'latitude': lat,
           'longitude': lon,
@@ -78,7 +78,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   ) async {
     try {
       final response = await dio.get(
-        Constants.BASE_URL_2 + Urls.HOURLY_FORECAST,
+        Constants.BASE_URL_2 + Urls.FORECAST,
         queryParameters: {
           'latitude': lat,
           'longitude': lon,
