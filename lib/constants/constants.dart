@@ -2,6 +2,12 @@
 
 import 'package:flutter/material.dart';
 
+/// In this app, APIs of two different sources are used
+/// 1) OpenWeatherMap API to get current weather data and geocoding: https://openweathermap.org/
+/// 2) OpenMeteo API to get weekly and hourly weather forecast data: https://open-meteo.com/
+
+/// UI Design from Figma Community: https://www.figma.com/file/la4jJ1HN6e1OdORGYJQkBu/Weather-App-UI-Design-(Community)?node-id=55%3A2454&t=UaVz1dJkaHKkajnQ-0
+
 class Constants {
   static const String BASE_URL_1 = 'https://api.openweathermap.org/';
   static const String BASE_URL_2 = 'https://api.open-meteo.com/v1/';
